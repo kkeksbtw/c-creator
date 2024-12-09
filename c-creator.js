@@ -79,6 +79,16 @@ export class CCreator extends DDDSuper(I18NMixin(LitElement)) {
         h3 span {
           font-size: var(--c-creator-label-font-size, var(--ddd-font-size-s));
         }
+
+        .slider-container {
+          display: flex; /* Indicator: Added to stack sliders */
+          flex-direction: column; /* Makes items stack vertically */
+          gap: 16px; /* Adds space between sliders */
+        }
+
+        .slider-container label {
+          margin-bottom: 4px; /* Adds space between label and slider */
+        }
       `,
     ];
   }
@@ -103,46 +113,90 @@ export class CCreator extends DDDSuper(I18NMixin(LitElement)) {
               --hat-color: hsl(${this.characterSettings.hatColor}, 100%, 50%);
             "
       ></rpg-character>
-
-      <label> hair </label>
-      <wired-checkbox></wired-checkbox>
-      <label> walking </label>
-      <wired-checkbox></wired-checkbox>>
-      <label> fire </label>
-      <wired-checkbox></wired-checkbox>
-      <label> base </label>
-      <wired-slider></wired-slider>
-      <label>face</label>
-      <wired-slider
-        id="face"
-        value="${this.characterSettings.face}"
-        min="0"
-        max="5"
-        @change="${(e) =>
-          this._updateSetting("face", parseInt(e.detail.value))}"
-      ></wired-slider>
-      <label> face item </label>
-      <wired-slider
-        id="faceitem"
-        value="${this.characterSettings.faceitem}"
-        min="0"
-        max="9"
-        @change="${(e) =>
-          this._updateSetting("faceitem", parseInt(e.detail.value))}"
-      ></wired-slider>
-      <label> pants </label>
-      <wired-slider></wired-slider>
-      <label> shirt </label>
-      <wired-slider></wired-slider>
-      <label> skin </label>
-      <wired-slider></wired-slider>
-      <label> hatColor </label>
-      <wired-slider></wired-slider>
+      <div class="slider-container">
+        <label> hair </label>
+        <wired-checkbox
+          id="hair"
+          value="${this.characterSettings.hair}"
+          min="0"
+          max="9"
+          @change="${(e) =>
+            this._updateSetting("hair", parseInt(e.detail.value))}"
+        ></wired-checkbox>
+        <label> walking </label>
+        <wired-checkbox
+          ?checked="${this.characterSettings.walking}"
+          @change="${(e) => this._updateSetting("walking", e.target.checked)}"
+        ></wired-checkbox
+        >>
+        <label> fire </label>
+        <wired-checkbox
+          ?checked="${this.characterSettings.fire}"
+          @change="${(e) => this._updateSetting("fire", e.target.checked)}"
+        ></wired-checkbox>
+        <label> base </label>
+        <wired-slider></wired-slider>
+        <label> face </label>
+        <wired-slider
+          id="face"
+          value="${this.characterSettings.face}"
+          min="0"
+          max="5"
+          @change="${(e) =>
+            this._updateSetting("face", parseInt(e.detail.value))}"
+        ></wired-slider>
+        <label> face item </label>
+        <wired-slider
+          id="faceitem"
+          value="${this.characterSettings.faceitem}"
+          min="0"
+          max="9"
+          @change="${(e) =>
+            this._updateSetting("faceitem", parseInt(e.detail.value))}"
+        ></wired-slider>
+        <label> pants </label>
+        <wired-slider
+          id="pants"
+          value="${this.characterSettings.pants}"
+          min="0"
+          max="9"
+          @change="${(e) =>
+            this._updateSetting("pants", parseInt(e.detail.value))}"
+        ></wired-slider>
+        <label> shirt </label>
+        <wired-slider
+          id="shirt"
+          value="${this.characterSettings.shirt}"
+          min="0"
+          max="9"
+          @change="${(e) =>
+            this._updateSetting("shirt", parseInt(e.detail.value))}"
+        ></wired-slider>
+        <label> skin </label>
+        <wired-slider
+          id="skin"
+          value="${this.characterSettings.skin}"
+          min="0"
+          max="9"
+          @change="${(e) =>
+            this._updateSetting("skin", parseInt(e.detail.value))}"
+        ></wired-slider>
+        <label> hatColor </label>
+        <wired-slider
+          id="hatColor"
+          value="${this.characterSettings.hatColor}"
+          min="0"
+          max="9"
+          @change="${(e) =>
+            this._updateSetting("hatColor", parseInt(e.detail.value))}"
+        ></wired-slider>
+      </div>
     </div>`;
   }
 
   _updateSetting(key, value) {
     this.characterSettings[key] = value;
+    this.requestUpdate();
   }
 
   /**
