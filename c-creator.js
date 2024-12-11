@@ -194,6 +194,18 @@ export class CCreator extends DDDSuper(I18NMixin(LitElement)) {
     </div>`;
   }
 
+  _generateSeed() {
+    const { base, face, faceitem, hair, pants, shirt, skin, hatColor } =
+      this.characterSettings;
+    this.characterSettings.seed = `${base}${face}${faceitem}${hair}${pants}${shirt}${skin}${hatColor}`;
+  }
+
+  _updateSetting(key, value) {
+    this.characterSettings = { ...this.characterSettings, [key]: value };
+    this._generateSeed();
+    this.requestUpdate();
+  }
+
   _updateSetting(key, value) {
     this.characterSettings[key] = value;
     this.requestUpdate();
