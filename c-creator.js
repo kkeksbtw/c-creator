@@ -25,9 +25,10 @@ export class CCreator extends DDDSuper(I18NMixin(LitElement)) {
     this.title = "Design Your Character";
     this.characterSettings = {
       seed: "00000000",
+      accessories: 0,
       base: 0, // 0 for no hair, 1 for hair
       face: 0,
-      faceitem: 0,
+      faceItem: 0,
       hair: 0,
       pants: 0,
       shirt: 0,
@@ -40,25 +41,6 @@ export class CCreator extends DDDSuper(I18NMixin(LitElement)) {
       walking: false,
     };
     this._applySeedToSettings(); // Ensure consistent character style on initialization
-  }
-
-  _applySeedToSettings() {
-    const seed = this.characterSettings.seed;
-    const paddedSeed = seed.padStart(8, "0").slice(0, 8);
-    const values = paddedSeed.split("").map((v) => parseInt(v, 10));
-
-    [
-      this.characterSettings.base,
-      this.characterSettings.face,
-      this.characterSettings.faceitem,
-      this.characterSettings.hair,
-      this.characterSettings.pants,
-      this.characterSettings.shirt,
-      this.characterSettings.skin,
-      this.characterSettings.hatColor,
-    ] = values;
-
-    this.requestUpdate(); // Ensure UI updates after applying settings
   }
 
   // Lit scoped styles
@@ -98,6 +80,7 @@ export class CCreator extends DDDSuper(I18NMixin(LitElement)) {
     return html` <div class="wrapper">
       <h3><span>${this.t.title}:</span> ${this.title}</h3>
       <rpg-character
+        accessories="${this.characterSettings.accessories}"
         base="${this.characterSettings.base}"
         face="${this.characterSettings.face}"
         faceitem="${this.characterSettings.faceitem}"
@@ -113,6 +96,9 @@ export class CCreator extends DDDSuper(I18NMixin(LitElement)) {
               --hat-color: hsl(${this.characterSettings.hatColor}, 100%, 50%);
             "
       ></rpg-character>
+
+      <div>Seed: ${this.characterSettings.seed}</div>
+
       <div class="slider-container">
         <label> hair </label>
         <wired-checkbox
@@ -121,21 +107,27 @@ export class CCreator extends DDDSuper(I18NMixin(LitElement)) {
           min="0"
           max="9"
           @change="${(e) =>
-            this._updateSetting("hair", parseInt(e.detail.value))}"
+            this._updateSetting("base", e.target.checked ? 1 : 0)}"
         ></wired-checkbox>
         <label> walking </label>
         <wired-checkbox
           ?checked="${this.characterSettings.walking}"
           @change="${(e) => this._updateSetting("walking", e.target.checked)}"
-        ></wired-checkbox
-        >>
+        ></wired-checkbox>
         <label> fire </label>
         <wired-checkbox
           ?checked="${this.characterSettings.fire}"
           @change="${(e) => this._updateSetting("fire", e.target.checked)}"
         ></wired-checkbox>
-        <label> base </label>
-        <wired-slider></wired-slider>
+        <label> Accessories </label>
+        <wired-slider
+          id="accessories"
+          value="${this.characterSettings.face}"
+          min="0"
+          max="5"
+          @change="${(e) =>
+            this._updateSetting("accessories", parseInt(e.detail.value))}"
+        ></wired-slider>
         <label> face </label>
         <wired-slider
           id="face"
@@ -190,25 +182,70 @@ export class CCreator extends DDDSuper(I18NMixin(LitElement)) {
           @change="${(e) =>
             this._updateSetting("hatColor", parseInt(e.detail.value))}"
         ></wired-slider>
+        <label> Hair </label>
+        <wired-slider
+          id="hair"
+          value="${this.characterSettings.hatColor}"
+          min="0"
+          max="9"
+          @change="${(e) =>
+            this._updateSetting("hair", parseInt(e.detail.value))}"
+        ></wired-slider>
       </div>
     </div>`;
   }
 
   _generateSeed() {
-    const { base, face, faceitem, hair, pants, shirt, skin, hatColor } =
-      this.characterSettings;
-    this.characterSettings.seed = `${base}${face}${faceitem}${hair}${pants}${shirt}${skin}${hatColor}`;
+    const {
+      accessories,
+      base,
+      face,
+      faceItem,
+      hair,
+      pants,
+      shirt,
+      skin,
+      hatColor,
+    } = this.characterSettings;
+    this.characterSettings.seed = `${accessories}${base}${face}${faceItem}${hair}${pants}${shirt}${skin}${hatColor}`;
   }
 
   _updateSetting(key, value) {
+    console.log("hi");
     this.characterSettings = { ...this.characterSettings, [key]: value };
-    this._generateSeed();
+    this._applySeedToSettings();
     this.requestUpdate();
   }
 
-  _updateSetting(key, value) {
-    this.characterSettings[key] = value;
-    this.requestUpdate();
+  _applySeedToSettings() {
+    console.log("hello");
+    const array = [
+      this.characterSettings.accessories,
+      this.characterSettings.base,
+      this.characterSettings.face,
+      this.characterSettings.faceItem,
+      this.characterSettings.hair,
+      this.characterSettings.pants,
+      this.characterSettings.shirt,
+      this.characterSettings.skin,
+      this.characterSettings.hatColor,
+    ];
+    this.characterSettings.seed = array.join("");
+
+    this.requestUpdate(); // Ensure UI updates after applying settings
+  }
+
+  _generateShareLink() {
+    const baseUrl = window.location.href.split("?")[0];
+    const params = new URLSearchParams({
+      seed: this.characterSettings.seed,
+    }).toString();
+    const shareLink = `${baseUrl}?${params}`;
+
+    navigator.clipboard.writeText(shareLink).then(
+      () => this._showNotification("Link copied!"),
+      (err) => this._showNotification(`Error: ${err}`)
+    );
   }
 
   /**
