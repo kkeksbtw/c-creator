@@ -8,7 +8,7 @@ import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
 import "@haxtheweb/rpg-character/rpg-character.js";
 import "wired-elements";
 import { WiredCheckbox } from "wired-elements";
-
+import { WiredButton } from "wired-elements";
 /**
  * `c-creator`
  *
@@ -191,6 +191,12 @@ export class CCreator extends DDDSuper(I18NMixin(LitElement)) {
           @change="${(e) =>
             this._updateSetting("hair", parseInt(e.detail.value))}"
         ></wired-slider>
+        <label> Share Link </label>
+        <wired-button
+          id="share link"
+          @click="${(e) => this._generateShareLink()}"
+          >Share Link</wired-button
+        >
       </div>
     </div>`;
   }
